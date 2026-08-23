@@ -2,7 +2,7 @@
    ويخزّن الصفحة الرئيسية والأيقونات مؤقتًا عشان تفتح بسرعة حتى مع ضعف الاتصال.
    لا يخزّن أي بيانات فعلية من Firestore — البيانات الحقيقية دايمًا لازم اتصال إنترنت. */
 
-const CACHE_NAME = "hr-system-shell-v1";
+const CACHE_NAME = "hr-system-shell-v2";
 const APP_SHELL = [
   "./manifest.json",
   "./favicon-32.png",
