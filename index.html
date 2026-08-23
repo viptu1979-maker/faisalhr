@@ -15,25 +15,20 @@
 <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent" />
 <meta name="apple-mobile-web-app-title" content="الموارد البشرية" />
 
-<!-- فتح الاتصال بالسيرفرات دي بدري عشان نوفر وقت DNS/TLS قبل ما نطلب الملفات فعليًا -->
+<!-- فتح الاتصال بالسيرفرات دي بدري عشان نوفر وقت DNS/TLS -->
 <link rel="preconnect" href="https://cdnjs.cloudflare.com" crossorigin />
 <link rel="preconnect" href="https://www.gstatic.com" crossorigin />
 <link rel="preconnect" href="https://cdn.jsdelivr.net" crossorigin />
 <link rel="preconnect" href="https://firestore.googleapis.com" crossorigin />
 
-<!-- تحميل المكتبات الخمسة بالتوازي مع بعض بدل ما تتحمل واحدة ورا التانية بالتتابع -->
-<link rel="preload" as="script" href="https://cdnjs.cloudflare.com/ajax/libs/react/18.2.0/umd/react.production.min.js" />
-<link rel="preload" as="script" href="https://cdnjs.cloudflare.com/ajax/libs/react-dom/18.2.0/umd/react-dom.production.min.js" />
-<link rel="preload" as="script" href="https://www.gstatic.com/firebasejs/10.12.2/firebase-app-compat.js" />
-<link rel="preload" as="script" href="https://www.gstatic.com/firebasejs/10.12.2/firebase-firestore-compat.js" />
-<link rel="preload" as="script" href="https://cdn.jsdelivr.net/npm/@emailjs/browser@4/dist/email.min.js" />
-<link rel="preload" as="script" href="app.min.js" />
-
-<script src="https://cdnjs.cloudflare.com/ajax/libs/react/18.2.0/umd/react.production.min.js"></script>
-<script src="https://cdnjs.cloudflare.com/ajax/libs/react-dom/18.2.0/umd/react-dom.production.min.js"></script>
-<script src="https://www.gstatic.com/firebasejs/10.12.2/firebase-app-compat.js"></script>
-<script src="https://www.gstatic.com/firebasejs/10.12.2/firebase-firestore-compat.js"></script>
-<script src="https://cdn.jsdelivr.net/npm/@emailjs/browser@4/dist/email.min.js"></script>
+<!-- كل المكتبات دي defer: تتحمّل بالخلفية بالتوازي من غير ما توقف رسم الصفحة،
+     وتتنفذ بالترتيب ده بالظبط بعد ما المتصفح يخلص رسم الـ HTML -->
+<script defer src="https://cdnjs.cloudflare.com/ajax/libs/react/18.2.0/umd/react.production.min.js"></script>
+<script defer src="https://cdnjs.cloudflare.com/ajax/libs/react-dom/18.2.0/umd/react-dom.production.min.js"></script>
+<script defer src="https://www.gstatic.com/firebasejs/10.12.2/firebase-app-compat.js"></script>
+<script defer src="https://www.gstatic.com/firebasejs/10.12.2/firebase-firestore-compat.js"></script>
+<script defer src="https://cdn.jsdelivr.net/npm/@emailjs/browser@4/dist/email.min.js"></script>
+<script defer src="app.min.js"></script>
 <style>
   html, body { margin: 0; padding: 0; }
   * { box-sizing: border-box; }
@@ -161,8 +156,7 @@
     }
     .responsive-table td > * { min-width: 0; }
   }
-</style>
-</head>
+</style></head>
 <body>
 <div id="root">
   <div style="min-height:100vh;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:14px;font-family:system-ui,-apple-system,'Segoe UI',Tahoma,Arial,sans-serif;background:#FBF8F2;">
@@ -171,20 +165,6 @@
   </div>
 </div>
 <style>@keyframes hr-spin{to{transform:rotate(360deg)}}</style>
-<script>
-  /* إعداد Firebase — قاعدة بيانات مشتركة لمزامنة النظام بين كل الأجهزة فورياً */
-  const firebaseConfig = {
-    apiKey: "AIzaSyCnGNov0joQL3g0KgcW4htRk24z9SRvo1s",
-    authDomain: "new-project-23d58.firebaseapp.com",
-    projectId: "new-project-23d58",
-    storageBucket: "new-project-23d58.firebasestorage.app",
-    messagingSenderId: "946651013408",
-    appId: "1:946651013408:web:5b097ebef10d5aecc6b745",
-  };
-  firebase.initializeApp(firebaseConfig);
-  window.__hrDb = firebase.firestore();
-</script>
-<script src="app.min.js"></script>
 
 <!-- تسجيل Service Worker عشان يشتغل التطبيق كـ PWA قابل للتثبيت على الجوال -->
 <script>
