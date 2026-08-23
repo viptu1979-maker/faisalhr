@@ -585,8 +585,10 @@ function ReceiptCard({ label, value, sub, tone }) {
         padding: "16px 18px",
         position: "relative",
         boxShadow: "0 1px 0 rgba(59,42,29,0.04)",
-        flex: "1 1 200px",
-        minWidth: 180,
+        display: "flex",
+        flexDirection: "column",
+        justifyContent: "center",
+        minWidth: 0,
       }}
     >
       <div style={{ fontSize: 12, color: COLORS.coffee, fontWeight: 600, marginBottom: 6 }}>{label}</div>
@@ -1348,7 +1350,7 @@ function HRApp({ currentUser, users, setUsers, onLogout, activityLog, logActivit
             : {}),
         }}
       >
-        <div style={{ marginBottom: 26, display: "flex", justifyContent: "space-between", alignItems: "flex-start", gap: 8 }}>
+        <div style={{ marginBottom: 14, display: "flex", justifyContent: "space-between", alignItems: "center", gap: 8 }}>
           <div>
             <div style={{ background: "#fff", borderRadius: 8, padding: "6px 10px", display: "inline-block", marginBottom: 10 }}>
               <img src={COMPANY_LOGO} alt="" style={{ maxWidth: 150, maxHeight: 32, display: "block" }} />
@@ -1356,7 +1358,7 @@ function HRApp({ currentUser, users, setUsers, onLogout, activityLog, logActivit
             <div style={{ fontSize: 18, fontWeight: 800, letterSpacing: 0.3 }}>{t("نظام الموارد البشرية", "HR System")}</div>
             <div style={{ fontSize: 11, color: COLORS.goldLight, marginTop: 3 }}>{t("شركة فيصل منصور حجي وشركائه (ذ.م.م)", "Faisal M. Higgi & Associates Co. Ltd.")}</div>
           </div>
-          {isMobile ? (
+          {isMobile && (
             <button
               onClick={() => setNavOpen(false)}
               aria-label={t("إغلاق القائمة", "Close menu")}
@@ -1364,15 +1366,11 @@ function HRApp({ currentUser, users, setUsers, onLogout, activityLog, logActivit
             >
               ✕
             </button>
-          ) : (
-            <LangToggle style={{ background: "rgba(255,255,255,0.08)", borderColor: "rgba(255,255,255,0.25)", color: "#F5EBDC", flexShrink: 0 }} />
           )}
         </div>
-        {isMobile && (
-          <div style={{ marginBottom: 14 }}>
-            <LangToggle style={{ background: "rgba(255,255,255,0.08)", borderColor: "rgba(255,255,255,0.25)", color: "#F5EBDC" }} />
-          </div>
-        )}
+        <div style={{ marginBottom: 18 }}>
+          <LangToggle style={{ background: "rgba(255,255,255,0.08)", borderColor: "rgba(255,255,255,0.25)", color: "#F5EBDC" }} />
+        </div>
         <nav style={{ display: "flex", flexDirection: "column", gap: 4 }}>
           {navItems.map((n) => (
             <button
@@ -1644,7 +1642,7 @@ function Dashboard({ entities, branches, employees, leaves, vehicles, branchName
   return (
     <div>
       <Header title={t("لوحة التحكم", "Dashboard")} subtitle={t("نظرة عامة على الكيانات والفروع والموظفين", "Overview of entities, branches, and employees")} />
-      <div style={{ display: "flex", gap: 14, flexWrap: "wrap", marginBottom: 24 }}>
+      <div style={{ display: "grid", gridTemplateColumns: "repeat(auto-fit, minmax(200px, 1fr))", gap: 14, marginBottom: 24 }}>
         <ReceiptCard label={t("إجمالي الموظفين النشطين", "Total Active Employees")} value={fmt(activeCount)} sub={t(`من أصل ${fmt(employees.length)} مسجّل`, `of ${fmt(employees.length)} registered`)} />
         <ReceiptCard label={t("إجمالي الرواتب الشهرية", "Total Monthly Salaries")} value={`${fmt(totalSalaries)} ﷼`} tone={COLORS.coffee} />
         <ReceiptCard label={t("عدد الفروع", "Number of Branches")} value={fmt(branches.length)} sub={t(`عبر ${fmt(entities.length)} كيانات`, `across ${fmt(entities.length)} entities`)} />
@@ -2682,7 +2680,7 @@ function IqamasContractsTab({ employees, setEmployees, branches }) {
     <div>
       <Header title={t("الإقامات والعقود", "Iqamas & Contracts")} subtitle={t("متابعة تواريخ انتهاء الإقامات وعقود العمل لتفادي الغرامات وتجديد العقود في وقتها", "Track iqama and contract expiry dates to avoid fines and renew on time")} />
 
-      <div style={{ display: "flex", gap: 14, flexWrap: "wrap", marginBottom: 18 }}>
+      <div style={{ display: "grid", gridTemplateColumns: "repeat(auto-fit, minmax(200px, 1fr))", gap: 14, marginBottom: 18 }}>
         <ReceiptCard label={t("إقامات تنتهي خلال 30 يوم", "Iqamas expiring within 30 days")} value={fmt(iqamaAlerts)} tone={iqamaAlerts > 0 ? COLORS.brick : COLORS.green} />
         <ReceiptCard label={t("عقود تنتهي خلال 30 يوم", "Contracts expiring within 30 days")} value={fmt(contractAlerts)} tone={contractAlerts > 0 ? COLORS.brick : COLORS.green} />
         <ReceiptCard label={t("إجمالي الموظفين النشطين", "Total Active Employees")} value={fmt(rows.length)} />
@@ -2927,7 +2925,7 @@ function BranchLicensesTab({ branches, setBranches, employees, setEmployees, veh
         )}
       />
 
-      <div style={{ display: "flex", gap: 14, flexWrap: "wrap", marginBottom: 18 }}>
+      <div style={{ display: "grid", gridTemplateColumns: "repeat(auto-fit, minmax(200px, 1fr))", gap: 14, marginBottom: 18 }}>
         <ReceiptCard label={t("سجلات تجارية تنتهي خلال 30 يوم", "Commercial registers expiring in 30 days")} value={fmt(crAlerts)} tone={crAlerts > 0 ? COLORS.brick : COLORS.green} />
         <ReceiptCard label={t("رخص دفاع مدني تنتهي خلال 30 يوم", "Civil defense licenses expiring in 30 days")} value={fmt(civilDefenseAlerts)} tone={civilDefenseAlerts > 0 ? COLORS.brick : COLORS.green} />
         <ReceiptCard label={t("رخص بلدية تنتهي خلال 30 يوم", "Municipality licenses expiring in 30 days")} value={fmt(municipalityAlerts)} tone={municipalityAlerts > 0 ? COLORS.brick : COLORS.green} />
@@ -3897,7 +3895,7 @@ function PayrollTab({ employees, branches, entities, entityOfBranch, gosiRates, 
         </Field>
       </div>
 
-      <div style={{ display: "flex", gap: 14, flexWrap: "wrap", marginBottom: 18 }}>
+      <div style={{ display: "grid", gridTemplateColumns: "repeat(auto-fit, minmax(200px, 1fr))", gap: 14, marginBottom: 18 }}>
         <ReceiptCard label={t("إجمالي الرواتب الأساسية", "Total Basic Salaries")} value={`${fmt(totals.salary)} ﷼`} />
         <ReceiptCard label={t("حصة الموظفين GOSI (تخصم)", "Employees' GOSI Share (deducted)")} value={`${fmt(totals.empShare)} ﷼`} tone={COLORS.brick} />
         <ReceiptCard label={t("خصومات الغياب والتأخير", "Absence & Lateness Deductions")} value={`${fmt(totals.attendanceDeduction)} ﷼`} tone={COLORS.brick} />
@@ -4356,7 +4354,7 @@ function EOSTab({ employees }) {
           <span>{emp ? (emp.name || "") : ""}</span>
         </div>
         {emp && (
-          <div style={{ display: "flex", gap: 14, flexWrap: "wrap" }}>
+          <div style={{ display: "grid", gridTemplateColumns: "repeat(auto-fit, minmax(200px, 1fr))", gap: 14 }}>
             <ReceiptCard label={t("المكافأة الكاملة (نظريًا)", "Full Bonus (Theoretical)")} value={`${fmt(result.full)} ﷼`} />
             <ReceiptCard label={t("المكافأة المستحقة فعليًا", "Actual Bonus Due")} value={`${fmt(result.adjusted)} ﷼`} tone={COLORS.green} sub={result.note} />
           </div>
@@ -5086,7 +5084,7 @@ function TasksTab({ employees, branches, tasks, onAddTask, onUpdateTaskStatus, o
     <div>
       <Header title={t("مهام الموظفين", "Employee Tasks")} subtitle={t("إسناد المهام للموظفين وتحديد فترة الإنجاز ومتابعة حالتها", "Assign tasks to employees, set the completion period, and track their status")} />
 
-      <div style={{ display: "flex", gap: 14, flexWrap: "wrap", marginBottom: 18 }}>
+      <div style={{ display: "grid", gridTemplateColumns: "repeat(auto-fit, minmax(200px, 1fr))", gap: 14, marginBottom: 18 }}>
         <ReceiptCard label={t("قيد التنفيذ", "In Progress")} value={fmt(openCount)} tone={COLORS.gold} />
         <ReceiptCard label={t("متأخرة", "Overdue")} value={fmt(overdueCount)} tone={COLORS.brick} />
         <ReceiptCard label={t("مكتملة", "Completed")} value={fmt(doneCount)} tone={COLORS.green} />
@@ -5472,7 +5470,7 @@ function EmployeeSelfView({ user, employee, leaves, leaveRequests, onSubmitLeave
           />
         )}
 
-        <div style={{ display: "flex", gap: 14, flexWrap: "wrap", marginBottom: 22 }}>
+        <div style={{ display: "grid", gridTemplateColumns: "repeat(auto-fit, minmax(200px, 1fr))", gap: 14, marginBottom: 22 }}>
           <ReceiptCard label={t("الراتب الأساسي", "Basic Salary")} value={`${fmt(employee.salary)} ﷼`} />
           <ReceiptCard
             label={t("الحالة الوظيفية", "Employment Status")}
@@ -6154,7 +6152,7 @@ function ReportsTab({ activityLog, users }) {
         <Btn onClick={() => window.print()}>{t("🖶 طباعة التقرير", "🖶 Print Report")}</Btn>
       </div>
 
-      <div style={{ display: "flex", gap: 14, flexWrap: "wrap", marginBottom: 18 }} className="no-print">
+      <div style={{ display: "grid", gridTemplateColumns: "repeat(auto-fit, minmax(200px, 1fr))", gap: 14, marginBottom: 18 }} className="no-print">
         <ReceiptCard label={t("عدد عمليات الدخول", "Login Count")} value={fmt(loginCount)} />
         <ReceiptCard label={t("عدد العمليات المعروضة", "Actions Shown")} value={fmt(rows.length)} tone={COLORS.coffee} />
       </div>
