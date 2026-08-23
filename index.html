@@ -171,6 +171,8 @@ const db = window.__hrDb;
 const DATA_DOC = db.collection("hrSystem").doc("data");
 const USERS_DOC = db.collection("hrSystem").doc("users");
 const LOG_DOC = db.collection("hrSystem").doc("activityLog");
+const TRIAL_DOC = db.collection("hrSystem").doc("trial");
+const TRIAL_DAYS = 7;
 
 /* ============ إعدادات EmailJS — لإرسال كود تأكيد الدخول بالإيميل (تحقق ثنائي) ============
    لازم تسجّل حساب مجاني على https://www.emailjs.com وتحط بياناتك هنا:
@@ -819,7 +821,7 @@ function Btn({ children, onClick, tone = "primary", small, type = "button", disa
 }
 
 /* ============ التطبيق الرئيسي ============ */
-function HRApp({ currentUser, users, setUsers, onLogout, activityLog, logActivity }) {
+function HRApp({ currentUser, users, setUsers, onLogout, activityLog, logActivity, trialDaysLeft }) {
   const { t } = useLang();
   const role = currentUser.role;
   const isAdmin = role === "admin";
@@ -1371,6 +1373,22 @@ function HRApp({ currentUser, users, setUsers, onLogout, activityLog, logActivit
         <div style={{ marginBottom: 18 }}>
           <LangToggle style={{ background: "rgba(255,255,255,0.08)", borderColor: "rgba(255,255,255,0.25)", color: "#F5EBDC" }} />
         </div>
+        {typeof trialDaysLeft === "number" && trialDaysLeft > 0 && trialDaysLeft <= 7 && (
+          <div
+            style={{
+              marginBottom: 18,
+              padding: "8px 10px",
+              borderRadius: 8,
+              background: trialDaysLeft <= 2 ? "rgba(200,90,70,0.25)" : "rgba(216,168,90,0.18)",
+              border: `1px solid ${trialDaysLeft <= 2 ? "rgba(200,90,70,0.5)" : "rgba(216,168,90,0.4)"}`,
+              fontSize: 11.5,
+              color: "#F5EBDC",
+              fontWeight: 700,
+            }}
+          >
+            {t(`⏳ الفترة التجريبية: متبقي ${trialDaysLeft} ${trialDaysLeft === 1 ? "يوم" : "أيام"}`, `⏳ Trial: ${trialDaysLeft} day${trialDaysLeft === 1 ? "" : "s"} left`)}
+          </div>
+        )}
         <nav style={{ display: "flex", flexDirection: "column", gap: 4 }}>
           {navItems.map((n) => (
             <button
@@ -4685,6 +4703,56 @@ function ChangePasswordModal({ currentUser, setUsers, onClose, logActivity }) {
   );
 }
 
+/* ============ شاشة انتهاء الفترة التجريبية ============ */
+function TrialExpiredScreen() {
+  const { t } = useLang();
+  return (
+    <div
+      dir="rtl"
+      style={{
+        fontFamily: "'Segoe UI', Tahoma, Arial, sans-serif",
+        background: `linear-gradient(180deg, ${COLORS.paper} 0%, #EFE6D2 60%, #E7DAC0 100%)`,
+        minHeight: "100vh",
+        display: "flex",
+        alignItems: "center",
+        justifyContent: "center",
+        padding: 16,
+        position: "relative",
+        overflow: "hidden",
+      }}
+    >
+      <NYSkyline />
+      <div
+        style={{
+          background: "#fff",
+          border: `1px solid ${COLORS.line}`,
+          borderRadius: 14,
+          padding: "36px 30px",
+          width: 380,
+          maxWidth: "100%",
+          textAlign: "center",
+          boxShadow: "0 10px 34px rgba(59,42,29,0.16)",
+          position: "relative",
+          zIndex: 1,
+        }}
+      >
+        <img src={COMPANY_LOGO} alt="" style={{ maxWidth: 200, maxHeight: 55, marginBottom: 18 }} />
+        <div style={{ fontSize: 30, marginBottom: 10 }}>⏳</div>
+        <div style={{ fontSize: 18, fontWeight: 800, color: COLORS.espresso, marginBottom: 10 }}>
+          {t("انتهت الفترة التجريبية", "Trial Period Ended")}
+        </div>
+        <div style={{ fontSize: 13, color: COLORS.coffee, lineHeight: 1.8 }}>
+          {t(
+            "انتهت مدة الـ 7 أيام التجريبية لاستخدام النظام. للاستمرار في استخدام النظام، الرجاء التواصل مع مزوّد الخدمة.",
+            "The 7-day trial period for using this system has ended. To continue using the system, please contact your service provider."
+          )}
+        </div>
+      </div>
+    </div>
+  );
+}
+
+
 function LoginScreen({ form, setForm, onSubmit, error }) {
   const { t } = useLang();
   return (
@@ -6218,6 +6286,34 @@ function Root() {
   const [logLoaded, setLogLoaded] = useState(false);
   const lastSyncedLogRef = useRef("");
 
+  /* الفترة التجريبية: 7 أيام من أول تشغيل — تاريخ البداية مخزّن في القاعدة (مش على الجهاز)
+     عشان ما يتأثرش بمسح الكاش أو تغيير الجهاز */
+  const [trialLoaded, setTrialLoaded] = useState(false);
+  const [trialDaysLeft, setTrialDaysLeft] = useState(null);
+  useEffect(() => {
+    TRIAL_DOC.get()
+      .then((snap) => {
+        const d = snap.data();
+        let startDate = d && d.startDate;
+        if (!startDate) {
+          startDate = new Date().toISOString().slice(0, 10);
+          TRIAL_DOC.set({ startDate }).catch(() => {});
+        }
+        const start = new Date(startDate);
+        start.setHours(0, 0, 0, 0);
+        const today = new Date();
+        today.setHours(0, 0, 0, 0);
+        const elapsed = Math.floor((today - start) / (1000 * 60 * 60 * 24));
+        setTrialDaysLeft(TRIAL_DAYS - elapsed);
+        setTrialLoaded(true);
+      })
+      .catch(() => {
+        /* لو تعذّر الوصول للقاعدة، نسمح بالدخول لتفادي قفل النظام بسبب مشكلة اتصال عابرة */
+        setTrialDaysLeft(TRIAL_DAYS);
+        setTrialLoaded(true);
+      });
+  }, []);
+
   /* الجلسة (من هو المسجّل دخوله) تبقى محلية على كل جهاز، ما تتزامنش */
   useEffect(() => {
     try {
@@ -6395,7 +6491,11 @@ function Root() {
     } catch (e) {}
   };
 
-  if (!authLoaded || !usersLoaded) return null;
+  if (!authLoaded || !usersLoaded || !trialLoaded) return null;
+
+  if (trialDaysLeft !== null && trialDaysLeft <= 0) {
+    return <TrialExpiredScreen />;
+  }
 
   if (pendingUser) {
     return (
@@ -6432,6 +6532,7 @@ function Root() {
       onLogout={logout}
       activityLog={activityLog}
       logActivity={(action, targetType, targetLabel) => logActivity(currentUser, action, targetType, targetLabel)}
+      trialDaysLeft={trialDaysLeft}
     />
   );
 }
