@@ -15,16 +15,15 @@
 <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent" />
 <meta name="apple-mobile-web-app-title" content="الموارد البشرية" />
 
-<!-- فتح الاتصال بسيرفر Firebase بدري عشان نوفر وقت DNS/TLS -->
-<link rel="preconnect" href="https://www.gstatic.com" crossorigin />
+<!-- فتح الاتصال بسيرفر قاعدة بيانات Firebase (Firestore) بدري -->
 <link rel="preconnect" href="https://firestore.googleapis.com" crossorigin />
 
 <!-- كل المكتبات دي defer: تتحمّل بالخلفية بالتوازي من غير ما توقف رسم الصفحة،
      وتتنفذ بالترتيب ده بالظبط بعد ما المتصفح يخلص رسم الـ HTML -->
 <script defer src="react.production.min.js"></script>
 <script defer src="react-dom.production.min.js"></script>
-<script defer src="https://www.gstatic.com/firebasejs/10.12.2/firebase-app-compat.js"></script>
-<script defer src="https://www.gstatic.com/firebasejs/10.12.2/firebase-firestore-compat.js"></script>
+<script defer src="firebase-app-compat.js"></script>
+<script defer src="firebase-firestore-compat.js"></script>
 <script defer src="email.min.js"></script>
 <script defer src="app.min.js"></script>
 <style>
