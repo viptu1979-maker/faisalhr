@@ -15,19 +15,17 @@
 <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent" />
 <meta name="apple-mobile-web-app-title" content="الموارد البشرية" />
 
-<!-- فتح الاتصال بالسيرفرات دي بدري عشان نوفر وقت DNS/TLS -->
-<link rel="preconnect" href="https://cdnjs.cloudflare.com" crossorigin />
+<!-- فتح الاتصال بسيرفر Firebase بدري عشان نوفر وقت DNS/TLS -->
 <link rel="preconnect" href="https://www.gstatic.com" crossorigin />
-<link rel="preconnect" href="https://cdn.jsdelivr.net" crossorigin />
 <link rel="preconnect" href="https://firestore.googleapis.com" crossorigin />
 
 <!-- كل المكتبات دي defer: تتحمّل بالخلفية بالتوازي من غير ما توقف رسم الصفحة،
      وتتنفذ بالترتيب ده بالظبط بعد ما المتصفح يخلص رسم الـ HTML -->
-<script defer src="https://cdnjs.cloudflare.com/ajax/libs/react/18.2.0/umd/react.production.min.js"></script>
-<script defer src="https://cdnjs.cloudflare.com/ajax/libs/react-dom/18.2.0/umd/react-dom.production.min.js"></script>
+<script defer src="vendor/react.production.min.js"></script>
+<script defer src="vendor/react-dom.production.min.js"></script>
 <script defer src="https://www.gstatic.com/firebasejs/10.12.2/firebase-app-compat.js"></script>
 <script defer src="https://www.gstatic.com/firebasejs/10.12.2/firebase-firestore-compat.js"></script>
-<script defer src="https://cdn.jsdelivr.net/npm/@emailjs/browser@4/dist/email.min.js"></script>
+<script defer src="vendor/email.min.js"></script>
 <script defer src="app.min.js"></script>
 <style>
   html, body { margin: 0; padding: 0; }
@@ -159,12 +157,36 @@
 </style></head>
 <body>
 <div id="root">
-  <div style="min-height:100vh;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:14px;font-family:system-ui,-apple-system,'Segoe UI',Tahoma,Arial,sans-serif;background:#FBF8F2;">
-    <div style="width:42px;height:42px;border:4px solid #E4D9C4;border-top-color:#B8863B;border-radius:50%;animation:hr-spin 0.8s linear infinite;"></div>
-    <div style="color:#8a7a63;font-size:14px;font-weight:600;">جاري تحميل النظام…</div>
+  <div id="hr-loading-shell" style="min-height:100vh;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:14px;font-family:system-ui,-apple-system,'Segoe UI',Tahoma,Arial,sans-serif;background:#FBF8F2;padding:20px;text-align:center;">
+    <div id="hr-spinner" style="width:42px;height:42px;border:4px solid #E4D9C4;border-top-color:#B8863B;border-radius:50%;animation:hr-spin 0.8s linear infinite;"></div>
+    <div id="hr-loading-text" style="color:#8a7a63;font-size:14px;font-weight:600;">جاري تحميل النظام…</div>
+    <div id="hr-error-box" style="display:none;flex-direction:column;align-items:center;gap:10px;">
+      <div style="color:#a3302e;font-size:14px;font-weight:700;">تعذّر تحميل النظام</div>
+      <div style="color:#8a7a63;font-size:12.5px;max-width:320px;line-height:1.6;">
+        غالبًا بسبب ضعف الاتصال بالإنترنت أو انقطاعه أثناء تحميل الصفحة. تأكد من الاتصال وحاول تاني.
+      </div>
+      <button onclick="location.reload()" style="margin-top:4px;padding:9px 22px;border:none;border-radius:8px;background:#B8863B;color:#fff;font-size:13px;font-weight:700;cursor:pointer;">
+        إعادة المحاولة
+      </button>
+    </div>
   </div>
 </div>
-<style>@keyframes hr-spin{to{transform:rotate(360deg)}}</style>
+<style>
+  @keyframes hr-spin { to { transform: rotate(360deg); } }
+</style>
+<script>
+  /* لو التطبيق ما اتحملش خلال ١٢ ثانية (مكتبة خارجية فشلت/الاتصال بطيء جدًا)،
+     نستبدل السبينر برسالة خطأ واضحة بدل ما تفضل الشاشة عالقة من غير تفسير */
+  window.__hrLoadWatchdog = setTimeout(function () {
+    var root = document.getElementById("root");
+    var stillEmpty = root && root.querySelector("#hr-loading-shell");
+    if (stillEmpty) {
+      document.getElementById("hr-spinner").style.display = "none";
+      document.getElementById("hr-loading-text").style.display = "none";
+      document.getElementById("hr-error-box").style.display = "flex";
+    }
+  }, 12000);
+</script>
 
 <!-- تسجيل Service Worker عشان يشتغل التطبيق كـ PWA قابل للتثبيت على الجوال -->
 <script>
